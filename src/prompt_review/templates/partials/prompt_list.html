@@ -1,0 +1,62 @@
+{% if prompts %}
+<div class="card">
+    <div class="card-header">
+        {{ prompts | length }} prompt{{ 's' if prompts | length != 1 else '' }}
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Time</th>
+                <th>Developer</th>
+                <th>Project</th>
+                <th>Ticket</th>
+                <th>Prompt</th>
+                <th>Flags</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for prompt in prompts %}
+            <tr class="expandable" onclick="
+                var el = document.getElementById('expand-{{ prompt.id }}');
+                el.classList.toggle('open');
+            ">
+                <td class="text-muted" style="white-space:nowrap;">
+                    {{ prompt.submitted_at.strftime('%Y-%m-%d %H:%M') }}
+                </td>
+                <td>{{ prompt.developer.display_name }}</td>
+                <td>{{ prompt.project_name or '-' }}</td>
+                <td>{{ prompt.ticket_number or '-' }}</td>
+                <td>
+                    <span class="truncate">{{ prompt.prompt_text[:80] }}{% if prompt.prompt_text|length > 80 %}...{% endif %}</span>
+                </td>
+                <td>
+                    {% for flag in prompt.flags %}
+                    <span class="badge badge-{{ flag.severity }}">{{ flag.flag_type }}</span>
+                    {% endfor %}
+                </td>
+            </tr>
+            <tr class="expand-content" id="expand-{{ prompt.id }}">
+                <td colspan="6">
+                    <div class="prompt-text">{{ prompt.prompt_text }}</div>
+                    {% for flag in prompt.flags %}
+                    <div class="alert-card severity-{{ flag.severity }} mt-1">
+                        <div class="alert-meta">
+                            <span class="badge badge-{{ flag.severity }}">{{ flag.severity }}</span>
+                            <span class="badge badge-{{ flag.flag_type }}">{{ flag.flag_type }}</span>
+                        </div>
+                        <div class="alert-explanation">{{ flag.explanation }}</div>
+                    </div>
+                    {% endfor %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="card">
+    <div class="card-body text-muted" style="text-align:center; padding: 32px;">
+        No prompts found matching the current filters.
+    </div>
+</div>
+{% endif %}

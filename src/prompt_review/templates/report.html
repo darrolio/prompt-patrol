@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}Report {{ report.report_date }} - Prompt Review{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Report: {{ report.report_date.strftime('%B %d, %Y') }}</h2>
+    <p>
+        <span class="badge badge-{{ report.status }}">{{ report.status }}</span>
+        {% if report.review_completed_at %}
+        &middot; Completed {{ report.review_completed_at.strftime('%H:%M UTC') }}
+        {% endif %}
+        &middot; Model: {{ report.llm_model_used or 'N/A' }}
+    </p>
+</div>
+
+<!-- Stats -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-value">{{ report.total_prompts }}</div>
+        <div class="stat-label">Total Prompts</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value" {% if report.flagged_count > 0 %}style="color: var(--warning)"{% endif %}>
+            {{ report.flagged_count }}
+        </div>
+        <div class="stat-label">Flagged</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ report.developer_count }}</div>
+        <div class="stat-label">Developers</div>
+    </div>
+</div>
+
+<!-- Summary -->
+{% if report.summary_text %}
+<div class="card">
+    <div class="card-header">AI Summary</div>
+    <div class="card-body summary-content">
+        {{ summary_html | safe }}
+    </div>
+</div>
+{% endif %}
+
+{% if report.error_message %}
+<div class="card">
+    <div class="card-header text-error">Error</div>
+    <div class="card-body">
+        <pre class="prompt-text">{{ report.error_message }}</pre>
+        <form method="post" action="/api/v1/reviews/trigger?review_date={{ report.report_date }}" class="mt-2">
+            <button type="submit" class="btn btn-primary">Retry Review</button>
+        </form>
+    </div>
+</div>
+{% endif %}
+
+<!-- Flags -->
+{% if flags %}
+<div class="card">
+    <div class="card-header">Flagged Prompts ({{ flags | length }})</div>
+    <div class="card-body">
+        {% for flag in flags %}
+        <div class="alert-card severity-{{ flag.severity }}">
+            <div class="alert-meta">
+                <span class="badge badge-{{ flag.severity }}">{{ flag.severity }}</span>
+                <span class="badge badge-{{ flag.flag_type }}">{{ flag.flag_type }}</span>
+                <span class="text-muted">{{ flag.prompt.developer.display_name }}</span>
+                {% if flag.prompt.project_name %}
+                <span class="text-muted">&middot; {{ flag.prompt.project_name }}</span>
+                {% endif %}
+            </div>
+            <div class="alert-explanation">{{ flag.explanation }}</div>
+            <div class="prompt-text mt-1">{{ flag.prompt.prompt_text }}</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% elif report.status == 'completed' %}
+<div class="card">
+    <div class="card-body text-muted" style="text-align: center; padding: 24px;">
+        No flags raised for this date. All prompts appear well-aligned.
+    </div>
+</div>
+{% endif %}
+
+<div class="mt-2">
+    <a href="/prompts?date={{ report.report_date }}" class="btn">View All Prompts for This Date</a>
+    <a href="/" class="btn">Back to Reports</a>
+</div>
+{% endblock %}

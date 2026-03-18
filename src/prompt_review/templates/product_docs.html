@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}Product Docs - Prompt Review{% endblock %}
+
+{% block content %}
+<div class="page-header flex justify-between items-center">
+    <div>
+        <h2>Product Documents</h2>
+        <p>Manage the documents that inform nightly prompt reviews</p>
+    </div>
+    <button class="btn btn-primary" onclick="document.getElementById('add-form').style.display='block'">
+        Add Document
+    </button>
+</div>
+
+<!-- Add Document Form (hidden by default) -->
+<div id="add-form" class="card" style="display:none;">
+    <div class="card-header">
+        Add New Document
+        <button class="btn btn-sm" onclick="document.getElementById('add-form').style.display='none'">Cancel</button>
+    </div>
+    <div class="card-body">
+        <form method="post" action="/product-docs">
+            <div class="form-group">
+                <label>Filename (unique identifier)</label>
+                <input type="text" name="filename" required placeholder="e.g. product-vision-2026.md">
+            </div>
+            <div class="form-group">
+                <label>Display Name</label>
+                <input type="text" name="display_name" required placeholder="e.g. Product Vision 2026">
+            </div>
+            <div class="form-group">
+                <label>Type</label>
+                <select name="doc_type">
+                    <option value="vision">Vision</option>
+                    <option value="roadmap">Roadmap</option>
+                    <option value="story">Story</option>
+                    <option value="general" selected>General</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Content</label>
+                <textarea name="content" rows="12" required placeholder="Paste document content here..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Save Document</button>
+        </form>
+    </div>
+</div>
+
+{% if docs %}
+<div class="card">
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Size</th>
+                <th>Updated</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for doc in docs %}
+            <tr>
+                <td>
+                    <strong>{{ doc.display_name }}</strong>
+                    <br><small class="text-muted">{{ doc.filename }}</small>
+                </td>
+                <td><span class="doc-type-{{ doc.doc_type }}">{{ doc.doc_type }}</span></td>
+                <td>
+                    {% if doc.is_active %}
+                    <span class="badge badge-completed">active</span>
+                    {% else %}
+                    <span class="badge badge-pending">inactive</span>
+                    {% endif %}
+                </td>
+                <td class="text-muted">{{ "{:,}".format(doc.content | length) }} chars</td>
+                <td class="text-muted">{{ doc.updated_at.strftime('%Y-%m-%d') }}</td>
+                <td>
+                    <a href="/product-docs/{{ doc.id }}/edit" class="btn btn-sm">Edit</a>
+                    <form method="post" action="/product-docs/{{ doc.id }}/toggle" style="display:inline;">
+                        <button type="submit" class="btn btn-sm">
+                            {% if doc.is_active %}Deactivate{% else %}Activate{% endif %}
+                        </button>
+                    </form>
+                    <form method="post" action="/product-docs/{{ doc.id }}/delete" style="display:inline;"
+                          onsubmit="return confirm('Delete this document?')">
+                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="card">
+    <div class="card-body text-muted" style="text-align:center; padding: 32px;">
+        No product documents uploaded yet. Add vision, roadmap, or story documents to inform nightly reviews.
+    </div>
+</div>
+{% endif %}
+{% endblock %}

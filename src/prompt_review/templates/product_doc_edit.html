@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Edit {{ doc.display_name }} - Prompt Review{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Edit Document</h2>
+    <p>{{ doc.filename }}</p>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="post" action="/product-docs/{{ doc.id }}/edit">
+            <div class="form-group">
+                <label>Display Name</label>
+                <input type="text" name="display_name" value="{{ doc.display_name }}" required>
+            </div>
+            <div class="form-group">
+                <label>Type</label>
+                <select name="doc_type">
+                    <option value="vision" {% if doc.doc_type == 'vision' %}selected{% endif %}>Vision</option>
+                    <option value="roadmap" {% if doc.doc_type == 'roadmap' %}selected{% endif %}>Roadmap</option>
+                    <option value="story" {% if doc.doc_type == 'story' %}selected{% endif %}>Story</option>
+                    <option value="general" {% if doc.doc_type == 'general' %}selected{% endif %}>General</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Content</label>
+                <textarea name="content" rows="20" required>{{ doc.content }}</textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+            <a href="/product-docs" class="btn">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

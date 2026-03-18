@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Prompt Browser - Prompt Review{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Prompt Browser</h2>
+    <p>Browse and filter all submitted prompts</p>
+</div>
+
+<form class="filters"
+      hx-get="/prompts/list"
+      hx-target="#prompt-list"
+      hx-trigger="change from:input, change from:select"
+      hx-indicator=".htmx-indicator">
+    <div class="form-group">
+        <label>Start Date</label>
+        <input type="date" name="start_date" value="{{ start_date or '' }}">
+    </div>
+    <div class="form-group">
+        <label>End Date</label>
+        <input type="date" name="end_date" value="{{ end_date or '' }}">
+    </div>
+    <div class="form-group">
+        <label>Developer</label>
+        <select name="developer">
+            <option value="">All</option>
+            {% for dev in developers %}
+            <option value="{{ dev.id }}" {% if selected_developer == dev.id|string %}selected{% endif %}>
+                {{ dev.display_name }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label>Ticket</label>
+        <input type="search" name="ticket" value="{{ ticket or '' }}" placeholder="e.g. PROJ-123">
+    </div>
+    <div class="form-group">
+        <label>Flag Status</label>
+        <select name="flag_status">
+            <option value="" {% if not flag_status %}selected{% endif %}>All</option>
+            <option value="flagged" {% if flag_status == 'flagged' %}selected{% endif %}>Flagged Only</option>
+            <option value="clean" {% if flag_status == 'clean' %}selected{% endif %}>Clean Only</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label>&nbsp;</label>
+        <button type="submit" class="btn btn-primary"
+                hx-get="/prompts/list"
+                hx-target="#prompt-list"
+                hx-include="closest form">Search</button>
+    </div>
+    <span class="htmx-indicator text-muted">Loading...</span>
+</form>
+
+<div id="prompt-list">
+    {% include "partials/prompt_list.html" %}
+</div>
+{% endblock %}

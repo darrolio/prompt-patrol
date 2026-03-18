@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Prompt Review{% endblock %}</title>
+    <link rel="stylesheet" href="/static/css/theme.css">
+    <script src="/static/js/htmx.min.js"></script>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <h1>Prompt Review</h1>
+            <small>AI Prompt Alignment</small>
+        </div>
+        <nav>
+            <a href="/" class="{% if active_page == 'home' %}active{% endif %}">
+                &#9633; Daily Reports
+            </a>
+            <a href="/prompts" class="{% if active_page == 'prompts' %}active{% endif %}">
+                &#9655; Prompt Browser
+            </a>
+            <a href="/product-docs" class="{% if active_page == 'docs' %}active{% endif %}">
+                &#9997; Product Docs
+            </a>
+        </nav>
+    </aside>
+
+    <main class="main">
+        {% block content %}{% endblock %}
+    </main>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>
