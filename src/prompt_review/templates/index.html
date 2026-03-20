@@ -7,9 +7,13 @@
         <h2>Daily Reports</h2>
         <p>AI-generated summaries of engineering prompt activity</p>
     </div>
-    <form method="post" action="/api/v1/reviews/trigger" style="display:inline;">
-        <button type="submit" class="btn btn-primary">Run Review Now</button>
-    </form>
+    <button class="btn btn-primary"
+            hx-post="/api/v1/reviews/trigger"
+            hx-swap="none"
+            hx-on::before-request="this.disabled=true; this.innerHTML='&#9203; Running review&hellip;'"
+            hx-on::after-request="window.location.reload()">
+        Run Review Now
+    </button>
 </div>
 
 {% if reports %}
@@ -48,7 +52,7 @@
 {% else %}
 <div class="card">
     <div class="card-body text-muted" style="text-align:center; padding: 40px;">
-        No reports yet. Reports are generated nightly at 2 AM, or use the button above to run one now.
+        No reports yet. Reports are generated nightly, or use the button above to run one now.
     </div>
 </div>
 {% endif %}

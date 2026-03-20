@@ -4,7 +4,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, Query, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -20,6 +20,7 @@ async def _query_prompts(
     start_date: str | None,
     end_date: str | None,
     developer_id: str | None,
+    project: str | None,
     ticket: str | None,
     flag_status: str | None,
 ) -> list[Prompt]:
@@ -40,6 +41,8 @@ async def _query_prompts(
         stmt = stmt.where(Prompt.submitted_at <= datetime.combine(d, time.max, tzinfo=timezone.utc))
     if developer_id:
         stmt = stmt.where(Prompt.developer_id == UUID(developer_id))
+    if project:
+        stmt = stmt.where(Prompt.project_name == project)
     if ticket:
         stmt = stmt.where(Prompt.ticket_number.ilike(f"%{ticket}%"))
 
@@ -61,6 +64,7 @@ async def prompt_browser(
     start_date: str | None = None,
     end_date: str | None = None,
     developer: str | None = None,
+    project: str | None = None,
     ticket: str | None = None,
     flag_status: str | None = None,
     session: AsyncSession = Depends(get_session),
@@ -75,15 +79,23 @@ async def prompt_browser(
     )
     developers = list(devs_result.scalars().all())
 
-    prompts = await _query_prompts(session, start_date, end_date, developer, ticket, flag_status)
+    # Get distinct project names for the filter dropdown
+    projects_result = await session.execute(
+        select(Prompt.project_name).where(Prompt.project_name.is_not(None)).distinct().order_by(Prompt.project_name)
+    )
+    projects = [row[0] for row in projects_result.all()]
+
+    prompts = await _query_prompts(session, start_date, end_date, developer, project, ticket, flag_status)
 
     return templates.TemplateResponse("prompts.html", {
         "request": request,
         "prompts": prompts,
         "developers": developers,
+        "projects": projects,
         "start_date": start_date,
         "end_date": end_date,
         "selected_developer": developer or "",
+        "selected_project": project or "",
         "ticket": ticket or "",
         "flag_status": flag_status or "",
         "active_page": "prompts",
@@ -96,11 +108,12 @@ async def prompt_list_partial(
     start_date: str | None = None,
     end_date: str | None = None,
     developer: str | None = None,
+    project: str | None = None,
     ticket: str | None = None,
     flag_status: str | None = None,
     session: AsyncSession = Depends(get_session),
 ):
-    prompts = await _query_prompts(session, start_date, end_date, developer, ticket, flag_status)
+    prompts = await _query_prompts(session, start_date, end_date, developer, project, ticket, flag_status)
     return templates.TemplateResponse("partials/prompt_list.html", {
         "request": request,
         "prompts": prompts,

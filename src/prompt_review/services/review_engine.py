@@ -20,10 +20,11 @@ give to AI coding assistants and identify concerns related to product direction.
 
 You will receive:
 1. PRODUCT CONTEXT: Documents describing the product vision, roadmap, and user stories.
-2. DAILY PROMPTS: All prompts submitted today, grouped by developer and session.
+2. DAILY PROMPTS: All prompts submitted today, grouped by project, then by developer and session.
 
 Your job is to:
-- Write a brief daily summary (3-5 paragraphs of markdown) of what the team worked on.
+- Write a brief daily summary in markdown, organized by project. Use a ## heading for each project, \
+then summarize what was worked on in that project (2-3 paragraphs per project).
 - Flag specific prompts that show genuine product-direction concerns.
 
 Flag types:
@@ -82,19 +83,22 @@ def _build_prompt_list(prompts: list[Prompt]) -> tuple[str, list[Prompt]]:
     flat_list: list[Prompt] = []
     lines: list[str] = []
 
-    sorted_prompts = sorted(prompts, key=lambda p: (p.developer.username, p.session_id, p.submitted_at))
+    sorted_prompts = sorted(prompts, key=lambda p: (
+        p.project_name or "", p.developer.username, p.session_id, p.submitted_at,
+    ))
 
-    for dev_name, dev_prompts in groupby(sorted_prompts, key=lambda p: p.developer.username):
-        lines.append(f"\n## Developer: {dev_name}")
-        for session_id, session_prompts in groupby(dev_prompts, key=attrgetter("session_id")):
-            lines.append(f"\n### Session: {session_id[:12]}...")
-            for p in session_prompts:
-                idx = len(flat_list)
-                flat_list.append(p)
-                project = f" [{p.project_name}]" if p.project_name else ""
-                ticket = f" ({p.ticket_number})" if p.ticket_number else ""
-                timestamp = p.submitted_at.strftime("%H:%M")
-                lines.append(f"\n[{idx}] {timestamp}{project}{ticket}\n{p.prompt_text}")
+    for project_name, project_prompts in groupby(sorted_prompts, key=lambda p: p.project_name or "Unknown"):
+        lines.append(f"\n# Project: {project_name}")
+        for dev_name, dev_prompts in groupby(project_prompts, key=lambda p: p.developer.username):
+            lines.append(f"\n## Developer: {dev_name}")
+            for session_id, session_prompts in groupby(dev_prompts, key=attrgetter("session_id")):
+                lines.append(f"\n### Session: {session_id[:12]}...")
+                for p in session_prompts:
+                    idx = len(flat_list)
+                    flat_list.append(p)
+                    ticket = f" ({p.ticket_number})" if p.ticket_number else ""
+                    timestamp = p.submitted_at.strftime("%H:%M")
+                    lines.append(f"\n[{idx}] {timestamp}{ticket}\n{p.prompt_text}")
 
     return "\n".join(lines), flat_list
 
@@ -144,9 +148,10 @@ async def run_review(session: AsyncSession, target_date: date) -> DailyReport:
             await session.commit()
             return report
 
-        # Count unique developers
+        # Count unique developers and projects
         developer_ids = {p.developer_id for p in prompts}
         report.developer_count = len(developer_ids)
+        project_names = {p.project_name or "Unknown" for p in prompts}
 
         # Load product docs
         doc_result = await session.execute(
@@ -161,7 +166,7 @@ async def run_review(session: AsyncSession, target_date: date) -> DailyReport:
         user_message = (
             f"# PRODUCT CONTEXT\n\n{product_context}\n\n"
             f"# DAILY PROMPTS ({target_date})\n\n"
-            f"Total: {len(flat_prompts)} prompts from {len(developer_ids)} developers\n"
+            f"Total: {len(flat_prompts)} prompts from {len(developer_ids)} developers across {len(project_names)} projects\n"
             f"{prompt_text}"
         )
 
