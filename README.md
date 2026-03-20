@@ -233,7 +233,7 @@ Available settings:
 | `DATABASE_URL` | `postgresql+asyncpg://promptreview:promptreview@localhost:5432/promptreview` | PostgreSQL connection string |
 | `ANTHROPIC_API_KEY` | (required) | Anthropic API key for nightly reviews |
 | `REVIEW_MODEL` | `claude-sonnet-4-20250514` | Claude model for reviews |
-| `REVIEW_SCHEDULE_HOUR` | `2` | Hour (0-23) to run nightly review |
+| `REVIEW_SCHEDULE_HOUR` | `9` | Hour (0-23, **in UTC**) to run nightly review. Convert your local time: e.g. 2 AM PDT = 9, 2 AM EDT = 6, 2 AM CDT = 7 |
 | `REVIEW_MAX_DOC_CHARS` | `50000` | Max product doc characters sent to Claude |
 | `HOST` | `0.0.0.0` | Server bind address |
 | `PORT` | `8000` | Server port |

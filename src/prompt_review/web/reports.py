@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from prompt_review.database import get_session
-from prompt_review.models import DailyReport, PromptFlag
+from prompt_review.models import DailyReport, Prompt, PromptFlag
 
 templates = Jinja2Templates(directory="src/prompt_review/templates")
 router = APIRouter(tags=["web"])
@@ -43,7 +43,7 @@ async def report_detail(request: Request, report_date: str, session: AsyncSessio
         select(PromptFlag)
         .where(PromptFlag.daily_report_id == report.id)
         .options(
-            selectinload(PromptFlag.prompt).selectinload("developer")
+            selectinload(PromptFlag.prompt).selectinload(Prompt.developer)
         )
         .order_by(
             # Critical first, then warning, then info

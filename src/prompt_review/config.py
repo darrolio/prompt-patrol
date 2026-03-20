@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     anthropic_api_key: str = ""
 
     review_model: str = "claude-sonnet-4-20250514"
-    review_schedule_hour: int = 2
+    review_schedule_hour: int = 9  # 9 AM UTC = 2 AM PDT
     review_max_doc_chars: int = 50_000
 
     host: str = "0.0.0.0"
