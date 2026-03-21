@@ -9,7 +9,7 @@
         {% if report.review_completed_at %}
         &middot; Completed {{ report.review_completed_at.strftime('%H:%M UTC') }}
         {% endif %}
-        &middot; Model: {{ report.llm_model_used or 'N/A' }}
+        &middot; Agent Model: {{ report.llm_model_used or 'N/A' }}
     </p>
 </div>
 
@@ -60,7 +60,7 @@
 <!-- Flags -->
 {% if flags %}
 <div class="card">
-    <div class="card-header">Flagged Prompts ({{ flags | length }})</div>
+    <div class="card-header">AI Flagged Prompts ({{ flags | length }})</div>
     <div class="card-body">
         {% for flag in flags %}
         <div class="alert-card severity-{{ flag.severity }}">
