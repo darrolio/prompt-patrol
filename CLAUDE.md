@@ -104,6 +104,10 @@ prompt-review run-review [--date YYYY-MM-DD]
 
 2. **Technical Docs** -- Another document type describing how the system should be built technically (architecture decisions, coding standards, infrastructure patterns). The LLM will flag prompts that deviate from the technical docs (e.g. using a disallowed library, wrong architectural pattern, ignoring established conventions).
 
+## Workflow Rules
+
+- **Never push to remote without asking first.** Always commit locally and let the user decide when to push.
+
 ## Coding Conventions
 
 - Async everywhere: all DB operations use `AsyncSession`
