@@ -1,8 +1,8 @@
-# Prompt Review
+# Prompt Patrol
 
-Engineers prompt AI coding assistants daily, but nobody reviews whether those prompts align with product vision, stories, or roadmap. Code review catches output problems; **Prompt Review catches input problems**.
+Engineers prompt AI coding assistants daily, but nobody reviews whether those prompts align with product vision, stories, or roadmap. Code review catches output problems; **Prompt Patrol catches input problems**.
 
-Prompt Review collects prompts from AI coding assistants (starting with Claude Code), stores them centrally, and runs a nightly LLM review that flags concerns and summarizes the day's work.
+Prompt Patrol collects prompts from AI coding assistants (starting with Claude Code), stores them centrally, and runs a nightly LLM review that flags concerns and summarizes the day's work.
 
 ## How It Works
 

@@ -1,8 +1,8 @@
-# Prompt Review - Claude Code Context
+# Prompt Patrol - Claude Code Context
 
 ## What This Project Is
 
-Prompt Review is a product management tool that collects prompts engineers give to AI coding assistants, stores them centrally, and runs nightly LLM reviews to flag misalignment with product vision. Claude Code is the first supported assistant (via `UserPromptSubmit` hook). The web UI uses a VS Code dark theme.
+Prompt Patrol is a product management tool that collects prompts engineers give to AI coding assistants, stores them centrally, and runs nightly LLM reviews to flag misalignment with product vision. Claude Code is the first supported assistant (via `UserPromptSubmit` hook). The web UI uses a VS Code dark theme.
 
 ## Tech Stack
 

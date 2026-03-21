@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Install the Prompt Review hook for Claude Code
+# Install the Prompt Patrol hook for Claude Code
 #
 # Usage:
 #   ./install.sh <SERVER_URL> <API_KEY>
@@ -16,7 +16,7 @@ HOOK_DIR="$HOME/.prompt-review"
 HOOK_SCRIPT="$HOOK_DIR/prompt_review_hook.py"
 SETTINGS_FILE="$HOME/.claude/settings.json"
 
-echo "=== Prompt Review Hook Installer ==="
+echo "=== Prompt Patrol Hook Installer ==="
 
 # 1. Copy hook script
 mkdir -p "$HOOK_DIR"

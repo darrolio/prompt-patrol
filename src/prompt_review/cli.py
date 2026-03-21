@@ -1,4 +1,4 @@
-"""CLI commands for Prompt Review administration."""
+"""CLI commands for Prompt Patrol administration."""
 import argparse
 import asyncio
 import secrets
@@ -99,7 +99,7 @@ async def cmd_run_review(args):
 
 
 def main():
-    parser = argparse.ArgumentParser(prog="prompt-review", description="Prompt Review CLI")
+    parser = argparse.ArgumentParser(prog="prompt-review", description="Prompt Patrol CLI")
     sub = parser.add_subparsers(dest="command")
 
     # register-developer

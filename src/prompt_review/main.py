@@ -55,7 +55,7 @@ async def check_missed_reviews():
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
-    logger.info("Prompt Review starting up")
+    logger.info("Prompt Patrol starting up")
 
     # Startup self-check
     from sqlalchemy import text
@@ -92,10 +92,10 @@ async def lifespan(app: FastAPI):
     # Shutdown
     scheduler.shutdown()
     await engine.dispose()
-    logger.info("Prompt Review shut down")
+    logger.info("Prompt Patrol shut down")
 
 
-app = FastAPI(title="Prompt Review", version="0.1.0", lifespan=lifespan)
+app = FastAPI(title="Prompt Patrol", version="0.1.0", lifespan=lifespan)
 
 # Static files
 app.mount("/static", StaticFiles(directory="src/prompt_review/static"), name="static")

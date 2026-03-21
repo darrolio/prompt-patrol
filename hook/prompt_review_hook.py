@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Claude Code hook script for Prompt Review.
+Claude Code hook script for Prompt Patrol.
 
 Captures prompts from Claude Code's UserPromptSubmit hook and sends them
-to the Prompt Review server. Always exits 0 to never block the developer.
+to the Prompt Patrol server. Always exits 0 to never block the developer.
 
 Install by adding to ~/.claude/settings.json:
 {
