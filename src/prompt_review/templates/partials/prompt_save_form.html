@@ -1,0 +1,20 @@
+<div class="save-section" onclick="event.stopPropagation();">
+    <div class="flex items-center gap-2 mb-1">
+        &#128735;
+        <strong style="color: var(--success); font-size: 12px;">EDIT SAVE</strong>
+    </div>
+    <form hx-post="/prompts/{{ prompt.id }}/save/edit"
+          hx-target="#save-{{ prompt.id }}"
+          hx-swap="innerHTML">
+        <div class="form-group">
+            <textarea name="description" rows="3" style="min-height: 70px;">{{ prompt.save.description }}</textarea>
+        </div>
+        <div class="flex gap-2">
+            <button type="submit" class="btn btn-primary btn-sm">Update</button>
+            <button type="button" class="btn btn-sm"
+                    hx-get="/prompts/{{ prompt.id }}/save"
+                    hx-target="#save-{{ prompt.id }}"
+                    hx-swap="innerHTML">Cancel</button>
+        </div>
+    </form>
+</div>

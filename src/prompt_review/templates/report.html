@@ -29,6 +29,10 @@
         <div class="stat-value">{{ report.developer_count }}</div>
         <div class="stat-label">Developers</div>
     </div>
+    <div class="stat-card">
+        <div class="stat-value" {% if save_count > 0 %}style="color: var(--success)"{% endif %}>{{ save_count }}</div>
+        <div class="stat-label">&#128735; Saves</div>
+    </div>
 </div>
 
 <!-- Summary -->

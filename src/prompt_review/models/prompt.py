@@ -23,3 +23,4 @@ class Prompt(Base):
 
     developer = relationship("Developer", back_populates="prompts")
     flags = relationship("PromptFlag", back_populates="prompt")
+    save = relationship("PromptSave", back_populates="prompt", uselist=False)

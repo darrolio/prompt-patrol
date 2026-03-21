@@ -24,6 +24,7 @@
                 <th>Date</th>
                 <th>Prompts</th>
                 <th>Flagged</th>
+                <th>Saves</th>
                 <th>Developers</th>
                 <th>Status</th>
                 <th>Model</th>
@@ -39,6 +40,14 @@
                     <span class="text-warning">{{ report.flagged_count }}</span>
                     {% else %}
                     {{ report.flagged_count }}
+                    {% endif %}
+                </td>
+                <td>
+                    {% set sc = save_count_map.get(report.report_date, 0) %}
+                    {% if sc > 0 %}
+                    <span class="text-success">{{ sc }}</span>
+                    {% else %}
+                    0
                     {% endif %}
                 </td>
                 <td>{{ report.developer_count }}</td>

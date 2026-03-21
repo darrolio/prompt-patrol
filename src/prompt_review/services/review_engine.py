@@ -23,8 +23,9 @@ You will receive:
 2. DAILY PROMPTS: All prompts submitted today, grouped by project, then by developer and session.
 
 Your job is to:
-- Write a brief daily summary in markdown, organized by project. Use a ## heading for each project, \
-then summarize what was worked on in that project (2-3 paragraphs per project).
+- Write a brief daily summary in markdown, organized by project. Use a ## heading for each project \
+prefixed with "Project: " (e.g. "## Project: MyApp"), then summarize what was worked on in that project \
+(2-3 paragraphs per project).
 - Flag specific prompts that show genuine product-direction concerns.
 
 Flag types:

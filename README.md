@@ -196,9 +196,9 @@ Or click "Run Review Now" on the homepage.
 
 | Page | URL | Description |
 |---|---|---|
-| Daily Reports | `/` | List of all daily reports with status, prompt counts, flag counts |
-| Report Detail | `/reports/{YYYY-MM-DD}` | AI summary, flagged prompts with severity badges, stats |
-| Prompt Browser | `/prompts` | Searchable list with HTMX filtering by date, developer, ticket, flag status |
+| Daily Reports | `/` | List of all daily reports with status, prompt counts, flag counts, save counts |
+| Report Detail | `/reports/{YYYY-MM-DD}` | AI summary (grouped by project), flagged prompts with severity badges, stats |
+| Prompt Browser | `/prompts` | Searchable list with HTMX filtering by date, developer, project, ticket, flag status |
 | Product Docs | `/product-docs` | Create, edit, toggle, and delete product documents |
 
 ## Flag Types
@@ -215,6 +215,20 @@ The nightly review flags prompts that indicate product-direction concerns:
 Each flag has a severity level: **info** (minor observation), **warning** (discuss at standup), or **critical** (immediate PM attention).
 
 The review engine is deliberately judicious -- it does not flag routine debugging, refactoring, test-writing, or exploratory work.
+
+## Register a Save
+
+When a PM reviews prompts and discovers one that helped the team catch a problem early (misalignment, confusion, wasted effort), they can **register a save** on that prompt. This creates a record that proves the system's value over time.
+
+**How to register a save:**
+
+1. Open the **Prompt Browser** (`/prompts`)
+2. Click on any prompt row to expand it
+3. Click the 🛟 **Register a Save** toggle
+4. Describe how reviewing this prompt helped the team (e.g. "Caught developer building feature X which was cut from the roadmap last week -- saved ~2 days of wasted effort")
+5. Click **Submit Save**
+
+Once saved, the life preserver icon appears on the prompt row. Save counts are displayed on the Daily Reports list and Report Detail pages. To edit a save, click the pencil icon next to it.
 
 ## Configuration
 
@@ -261,7 +275,8 @@ prompt-review/
 ├── alembic/                    # Database migrations
 │   ├── env.py
 │   └── versions/
-│       └── 001_initial_schema.py
+│       ├── 001_initial_schema.py
+│       └── 002_add_prompt_saves.py
 ├── hook/                       # Client-side hook for dev machines
 │   ├── prompt_review_hook.py
 │   └── install.sh
@@ -270,7 +285,7 @@ prompt-review/
 │   ├── config.py               # Settings from env vars
 │   ├── database.py             # SQLAlchemy async engine
 │   ├── cli.py                  # CLI commands
-│   ├── models/                 # ORM models (5 tables)
+│   ├── models/                 # ORM models (6 tables)
 │   ├── schemas/                # Pydantic request/response schemas
 │   ├── api/                    # JSON API routes
 │   ├── web/                    # HTML page routes

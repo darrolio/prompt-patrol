@@ -386,6 +386,57 @@ textarea {
 .doc-type-story { color: var(--warning); }
 .doc-type-general { color: var(--text-secondary); }
 
+/* Save registration */
+.save-section {
+    margin-top: 10px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--bg-tertiary);
+    border-left: 3px solid var(--success);
+}
+
+.save-register {
+    border-left-color: var(--border-light);
+}
+
+.save-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text-secondary);
+    list-style: none;
+}
+
+.save-toggle::-webkit-details-marker { display: none; }
+
+.save-toggle:hover { color: var(--text-primary); }
+
+.save-display {
+    font-size: 13px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+}
+
+.save-meta {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+.save-edit-btn {
+    cursor: pointer;
+    color: var(--text-secondary);
+    background: none;
+    border: none;
+    font-size: 14px;
+    padding: 2px 4px;
+}
+
+.save-edit-btn:hover { color: var(--accent); }
+
 /* Responsive */
 @media (max-width: 768px) {
     .sidebar { width: 100%; height: auto; position: static; }

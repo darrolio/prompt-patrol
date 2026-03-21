@@ -12,6 +12,7 @@
                 <th>Ticket</th>
                 <th>Prompt</th>
                 <th>Flags</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -34,9 +35,14 @@
                     <span class="badge badge-{{ flag.severity }}">{{ flag.flag_type }}</span>
                     {% endfor %}
                 </td>
+                <td style="text-align:center;">
+                    {% if prompt.save %}
+                    <span title="Save registered">&#128735;</span>
+                    {% endif %}
+                </td>
             </tr>
             <tr class="expand-content" id="expand-{{ prompt.id }}">
-                <td colspan="6">
+                <td colspan="7">
                     <div class="prompt-text">{{ prompt.prompt_text }}</div>
                     {% for flag in prompt.flags %}
                     <div class="alert-card severity-{{ flag.severity }} mt-1">
@@ -47,6 +53,9 @@
                         <div class="alert-explanation">{{ flag.explanation }}</div>
                     </div>
                     {% endfor %}
+                    <div id="save-{{ prompt.id }}" class="mt-1">
+                        {% include "partials/prompt_save.html" %}
+                    </div>
                 </td>
             </tr>
             {% endfor %}

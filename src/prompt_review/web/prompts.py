@@ -1,7 +1,7 @@
 from datetime import date, datetime, time, timezone
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Query, Request
+from fastapi import APIRouter, Depends, Form, Query, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import func, select
@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from prompt_review.database import get_session
-from prompt_review.models import Developer, Prompt
+from prompt_review.models import Developer, Prompt, PromptSave
 
 templates = Jinja2Templates(directory="src/prompt_review/templates")
 router = APIRouter(tags=["web"])
@@ -29,6 +29,7 @@ async def _query_prompts(
         .options(
             selectinload(Prompt.developer),
             selectinload(Prompt.flags),
+            selectinload(Prompt.save),
         )
         .order_by(Prompt.submitted_at.desc())
     )
@@ -117,4 +118,75 @@ async def prompt_list_partial(
     return templates.TemplateResponse("partials/prompt_list.html", {
         "request": request,
         "prompts": prompts,
+    })
+
+
+async def _get_prompt_with_save(session: AsyncSession, prompt_id: UUID) -> Prompt | None:
+    result = await session.execute(
+        select(Prompt).options(selectinload(Prompt.save)).where(Prompt.id == prompt_id)
+    )
+    return result.scalar_one_or_none()
+
+
+@router.get("/prompts/{prompt_id}/save", response_class=HTMLResponse)
+async def get_save_partial(
+    request: Request,
+    prompt_id: UUID,
+    session: AsyncSession = Depends(get_session),
+):
+    prompt = await _get_prompt_with_save(session, prompt_id)
+    return templates.TemplateResponse("partials/prompt_save.html", {
+        "request": request,
+        "prompt": prompt,
+    })
+
+
+@router.post("/prompts/{prompt_id}/save", response_class=HTMLResponse)
+async def create_save(
+    request: Request,
+    prompt_id: UUID,
+    description: str = Form(...),
+    session: AsyncSession = Depends(get_session),
+):
+    save = PromptSave(prompt_id=prompt_id, description=description)
+    session.add(save)
+    await session.commit()
+    prompt = await _get_prompt_with_save(session, prompt_id)
+    return templates.TemplateResponse("partials/prompt_save.html", {
+        "request": request,
+        "prompt": prompt,
+    })
+
+
+@router.get("/prompts/{prompt_id}/save/edit", response_class=HTMLResponse)
+async def edit_save_form(
+    request: Request,
+    prompt_id: UUID,
+    session: AsyncSession = Depends(get_session),
+):
+    prompt = await _get_prompt_with_save(session, prompt_id)
+    return templates.TemplateResponse("partials/prompt_save_form.html", {
+        "request": request,
+        "prompt": prompt,
+    })
+
+
+@router.post("/prompts/{prompt_id}/save/edit", response_class=HTMLResponse)
+async def update_save(
+    request: Request,
+    prompt_id: UUID,
+    description: str = Form(...),
+    session: AsyncSession = Depends(get_session),
+):
+    result = await session.execute(
+        select(PromptSave).where(PromptSave.prompt_id == prompt_id)
+    )
+    save = result.scalar_one_or_none()
+    if save:
+        save.description = description
+        await session.commit()
+    prompt = await _get_prompt_with_save(session, prompt_id)
+    return templates.TemplateResponse("partials/prompt_save.html", {
+        "request": request,
+        "prompt": prompt,
     })

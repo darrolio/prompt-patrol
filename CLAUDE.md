@@ -18,14 +18,14 @@ src/prompt_review/
   config.py        # Pydantic settings from env vars / .env
   database.py      # Async SQLAlchemy engine + session factory
   cli.py           # CLI: register-developer, import-docs, run-review
-  models/          # 5 SQLAlchemy ORM models (developer, prompt, daily_report, prompt_flag, product_doc)
+  models/          # 6 SQLAlchemy ORM models (developer, prompt, daily_report, prompt_flag, prompt_save, product_doc)
   schemas/         # Pydantic request/response schemas
   api/             # JSON API routes (/api/v1/prompts, /api/v1/reviews/trigger, /api/v1/health)
   web/             # HTML page routes (/, /reports/{date}, /prompts, /product-docs)
   services/        # Business logic (ingestion.py, review_engine.py, product_docs.py)
-  templates/       # Jinja2 templates (base.html + 5 page templates + partials/)
+  templates/       # Jinja2 templates (base.html + 5 page templates + partials/ incl. save UI)
   static/          # CSS theme + htmx.min.js
-alembic/           # DB migrations (001_initial_schema.py)
+alembic/           # DB migrations (001_initial_schema.py, 002_add_prompt_saves.py)
 hook/              # Client-side hook script for developer machines
 tests/             # pytest + pytest-asyncio, SQLite test DB
 ```
@@ -56,7 +56,7 @@ prompt-review run-review [--date YYYY-MM-DD]
 
 ## Database
 
-- 5 tables: `developers`, `prompts`, `daily_reports`, `prompt_flags`, `product_docs`
+- 6 tables: `developers`, `prompts`, `daily_reports`, `prompt_flags`, `prompt_saves`, `product_docs`
 - Models use portable `sqlalchemy.Uuid` (not PostgreSQL-specific UUID) for SQLite test compatibility
 - Metadata column uses `sqlalchemy.JSON` (not JSONB) for the same reason
 - Migrations are in `alembic/versions/`
@@ -92,7 +92,17 @@ prompt-review run-review [--date YYYY-MM-DD]
 - Developer registered (`deaton` / Darryl Eaton), API key set as `PROMPT_REVIEW_API_KEY` env var
 - `PROMPT_REVIEW_URL` and `PROMPT_REVIEW_API_KEY` env vars configured and working
 - Hook successfully submitting prompts to server (verified 2026-03-17)
-- Search button added to prompt browser (alignment fix with `&nbsp;` label pending rebuild)
+- Review engine groups prompts by project for per-project summaries
+- Prompt browser has project filter dropdown
+- "Register a Save" feature fully implemented with inline HTMX UI
+- "Run Review Now" button uses HTMX with spinner (no JSON redirect)
+- Nightly review scheduled at 9 AM UTC (2 AM PDT)
+
+## Future Work
+
+1. **Compliance Docs** -- A new document type alongside Product Docs. These documents will describe policies and procedures. The LLM review will be informed that compliance docs serve a different purpose from product docs, and will flag prompts that may have compliance concerns (e.g. data handling violations, security policy deviations, regulatory risks).
+
+2. **Technical Docs** -- Another document type describing how the system should be built technically (architecture decisions, coding standards, infrastructure patterns). The LLM will flag prompts that deviate from the technical docs (e.g. using a disallowed library, wrong architectural pattern, ignoring established conventions).
 
 ## Coding Conventions
 
@@ -102,12 +112,21 @@ prompt-review run-review [--date YYYY-MM-DD]
 - Services layer separates business logic from routes
 - Config via `pydantic-settings` with `.env` file support
 
+## "Register a Save" Feature
+
+- PMs can mark any prompt as a "save" -- documenting how reviewing that prompt helped the team avoid a bad outcome
+- 1:1 relationship: one save per prompt (`prompt_saves` table, unique on `prompt_id`)
+- UI: life preserver icon (🛟) in prompt browser; expand a prompt to see "Register a Save" toggle
+- Inline HTMX forms for create and edit (pencil icon); no page reloads
+- Save counts displayed on Daily Reports list and Report Detail stats
+- Purpose: builds evidence that the system is effective over time
+
 ## Review Engine Details
 
 The nightly review (`services/review_engine.py`):
 1. Loads active product docs (priority: vision > roadmap > story > general, capped at 50K chars)
-2. Groups prompts by developer + session
-3. Calls Claude API with structured system prompt
+2. Groups prompts by **project**, then by developer + session
+3. Calls Claude API with structured system prompt; summary uses per-project `##` headings
 4. Expects JSON response: `{ "summary": "markdown", "flags": [...] }`
 5. Flag types: `confusion`, `misalignment`, `insufficient_context`, `backtracking`
 6. Severity levels: `info`, `warning`, `critical`
