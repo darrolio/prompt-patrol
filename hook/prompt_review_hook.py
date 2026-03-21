@@ -106,6 +106,13 @@ def main():
         if not prompt_text:
             return
 
+        # Mask PII before sending to server
+        try:
+            from pii_masker import mask_pii
+            prompt_text = mask_pii(prompt_text)
+        except ImportError:
+            logger.warning("pii_masker not found, sending unmasked prompt")
+
         session_id = hook_data.get("session_id", "unknown")
         cwd = hook_data.get("cwd", os.getcwd())
 
