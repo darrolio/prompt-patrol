@@ -178,6 +178,12 @@ tr:hover td {
 .badge-misalignment { background: rgba(244,71,71,0.15); color: var(--error); }
 .badge-insufficient_context { background: rgba(55,148,255,0.15); color: var(--info); }
 .badge-backtracking { background: rgba(150,150,150,0.15); color: var(--text-secondary); }
+.badge-compliance { background: rgba(180,130,255,0.15); color: #b482ff; }
+.badge-architectural { background: rgba(0,180,200,0.15); color: #00b4c8; }
+.badge-security { background: rgba(244,71,71,0.2); color: var(--error); }
+.badge-performance { background: rgba(255,165,0,0.15); color: #ffa500; }
+.badge-dependency { background: rgba(150,150,150,0.15); color: var(--text-secondary); }
+.badge-convention { background: rgba(55,148,255,0.15); color: var(--info); }
 
 /* Buttons */
 .btn {
@@ -385,6 +391,8 @@ textarea {
 .doc-type-roadmap { color: var(--success); }
 .doc-type-story { color: var(--warning); }
 .doc-type-general { color: var(--text-secondary); }
+.doc-type-compliance { color: #b482ff; }
+.doc-type-technical { color: #00b4c8; }
 
 /* Save registration */
 .save-section {

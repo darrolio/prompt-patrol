@@ -4,6 +4,8 @@ Engineers prompt AI coding assistants daily, but nobody reviews whether those pr
 
 Prompt Patrol collects prompts from AI coding assistants (starting with Claude Code), stores them centrally, and runs a nightly LLM review that flags concerns and summarizes the day's work.
 
+![Prompt Patrol Screenshot](prompt_patrol_screenshot.png)
+
 ## How It Works
 
 ```

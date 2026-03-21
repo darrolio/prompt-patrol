@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Edit {{ doc.display_name }} - Prompt Patrol{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Edit Document</h2>
+    <p>{{ doc.filename }}</p>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="post" action="{{ base_url }}/{{ doc.id }}/edit">
+            <div class="form-group">
+                <label>Display Name</label>
+                <input type="text" name="display_name" value="{{ doc.display_name }}" required>
+            </div>
+            <div class="form-group">
+                <label>Type</label>
+                <select name="doc_type">
+                    {% for val, label in type_options %}
+                    <option value="{{ val }}" {% if doc.doc_type == val %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Content</label>
+                <textarea name="content" rows="20" required>{{ doc.content }}</textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+            <a href="{{ base_url }}" class="btn">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

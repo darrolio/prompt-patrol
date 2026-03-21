@@ -7,10 +7,16 @@ from prompt_review.models import ProductDoc
 from prompt_review.schemas.product_doc import ProductDocCreate, ProductDocUpdate
 
 
-async def list_docs(session: AsyncSession, active_only: bool = False) -> list[ProductDoc]:
+async def list_docs(
+    session: AsyncSession,
+    active_only: bool = False,
+    doc_types: list[str] | None = None,
+) -> list[ProductDoc]:
     stmt = select(ProductDoc).order_by(ProductDoc.doc_type, ProductDoc.display_name)
     if active_only:
         stmt = stmt.where(ProductDoc.is_active.is_(True))
+    if doc_types:
+        stmt = stmt.where(ProductDoc.doc_type.in_(doc_types))
     result = await session.execute(stmt)
     return list(result.scalars().all())
 
