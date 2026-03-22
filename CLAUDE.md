@@ -69,7 +69,9 @@ prompt-review run-review [--date YYYY-MM-DD]
 - **Review model**: Sonnet by default (configurable via `REVIEW_MODEL` env var)
 - **Scheduler**: APScheduler in-process; on startup checks for interrupted reviews (status="running") and re-runs
 - **Frontend**: HTMX + Jinja2, no JS framework -- the `/prompts/list` partial enables filtering without page reload
-- **Product docs**: Stored in DB (not filesystem) for simpler CRUD and single backup path
+- **Documents**: Text extracted from uploaded files (PDF, DOCX, TXT, MD) and stored in DB; original files are not kept
+- **Doc types**: Three categories -- product, compliance, technical -- each with their own UI section
+- **PII masking**: Defense in depth -- hook masks before sending, server masks before storing
 - **`source_tool` field**: Designed for extensibility to other AI assistants beyond Claude Code
 
 ## Windows-Specific Issues (Resolved)
@@ -91,18 +93,21 @@ prompt-review run-review [--date YYYY-MM-DD]
 - Hook configured in `~/.claude/settings.json` with forward-slash paths (backslashes fail silently)
 - Developer registered (`deaton` / Darryl Eaton), API key set as `PROMPT_REVIEW_API_KEY` env var
 - `PROMPT_REVIEW_URL` and `PROMPT_REVIEW_API_KEY` env vars configured and working
-- Hook successfully submitting prompts to server (verified 2026-03-17)
+- Hook successfully submitting prompts to server with PII masking (verified 2026-03-17)
 - Review engine groups prompts by project for per-project summaries
 - Prompt browser has project filter dropdown
 - "Register a Save" feature fully implemented with inline HTMX UI
 - "Run Review Now" button uses HTMX with spinner (no JSON redirect)
 - Nightly review scheduled at 9 AM UTC (2 AM PDT)
+- Three document sections: Product Docs, Compliance Docs, Technical Docs
+- File upload with text extraction (PDF, DOCX, TXT, MD); files not stored
+- 10 flag types across product, compliance, and technical dimensions
+- Responsible use statement in review engine system prompt
+- PII masking on hook (client-side) and server (safety net)
 
 ## Future Work
 
-1. **Compliance Docs** -- A new document type alongside Product Docs. These documents will describe policies and procedures. The LLM review will be informed that compliance docs serve a different purpose from product docs, and will flag prompts that may have compliance concerns (e.g. data handling violations, security policy deviations, regulatory risks).
-
-2. **Technical Docs** -- Another document type describing how the system should be built technically (architecture decisions, coding standards, infrastructure patterns). The LLM will flag prompts that deviate from the technical docs (e.g. using a disallowed library, wrong architectural pattern, ignoring established conventions).
+1. **PR-Linked Reviews** -- Attach prompts to a specific pull request so the review and the code change can be evaluated together. This would let PMs see "these prompts led to this PR" and flag alignment issues in the context of the actual deliverable. Implementation TBD -- could use branch name matching, GitHub API integration, or a manual PR link in the prompt browser.
 
 ## Workflow Rules
 
