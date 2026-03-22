@@ -171,18 +171,23 @@ Claude Code picks up hook changes automatically -- no need to restart your sessi
 
 The hook **always exits 0** -- it never blocks developer workflow. Errors are logged to `~/.prompt-review/hook.log` (on Windows: `%USERPROFILE%\.prompt-review\hook.log`).
 
-### 4. Upload Product Documents
+### 4. Upload Documents
 
-Product vision, roadmap, and story documents are used as context for the nightly review.
+Upload documents that inform the nightly AI review. There are three categories:
+
+- **Product Docs** -- product vision, roadmap, user stories (flags misalignment)
+- **Compliance Docs** -- policies, procedures, regulations (flags compliance concerns)
+- **Technical Docs** -- architecture decisions, coding standards (flags technical deviations)
 
 **Via CLI:**
 
 ```bash
-prompt-review import-docs ./docs/ --doc-type vision
-prompt-review import-docs ./stories/ --doc-type story
+prompt-review import-docs ./vision/ --doc-type vision
+prompt-review import-docs ./policies/ --doc-type compliance
+prompt-review import-docs ./architecture/ --doc-type technical
 ```
 
-**Via Web UI:** Navigate to `/product-docs` and use the "Add Document" form.
+**Via Web UI:** Use the sidebar to navigate to Product Docs, Compliance Docs, or Technical Docs, then click "Add Document".
 
 ### 5. View Reports
 
