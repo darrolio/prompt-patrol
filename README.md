@@ -182,9 +182,9 @@ Upload documents that inform the nightly AI review. There are three categories:
 **Via CLI:**
 
 ```bash
-prompt-review import-docs ./vision/ --doc-type vision
-prompt-review import-docs ./policies/ --doc-type compliance
-prompt-review import-docs ./architecture/ --doc-type technical
+prompt-review import-docs ./product-docs/ --doc-type product
+prompt-review import-docs ./compliance-docs/ --doc-type compliance
+prompt-review import-docs ./technical-docs/ --doc-type technical
 ```
 
 **Via Web UI:** Use the sidebar to navigate to Product Docs, Compliance Docs, or Technical Docs, then click "Add Document".
@@ -303,7 +303,7 @@ Available settings:
 
 ```bash
 prompt-review register-developer <username> [--display-name "Name"]
-prompt-review import-docs <path> [--doc-type vision|roadmap|story|general]
+prompt-review import-docs <path> [--doc-type product|compliance|technical]
 prompt-review run-review [--date YYYY-MM-DD]
 ```
 

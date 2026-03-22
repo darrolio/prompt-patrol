@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Form, Request
+from fastapi import APIRouter, Depends, Form, Request, UploadFile, File
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from prompt_review.database import get_session
 from prompt_review.schemas.product_doc import ProductDocCreate, ProductDocUpdate
 from prompt_review.services import product_docs as doc_service
+from prompt_review.services.doc_extractor import extract_text, ACCEPTED_TYPES_DISPLAY
 
 templates = Jinja2Templates(directory="src/prompt_review/templates")
 router = APIRouter(tags=["web"])
@@ -18,9 +19,9 @@ DOC_SECTIONS = {
         "active_page": "docs",
         "page_title": "Product Documents",
         "page_description": "Manage the product documents that inform nightly prompt reviews",
-        "doc_types": ["vision", "roadmap", "story", "general"],
-        "type_options": [("vision", "Vision"), ("roadmap", "Roadmap"), ("story", "Story"), ("general", "General")],
-        "default_type": "general",
+        "doc_types": ["product"],
+        "type_options": [("product", "Product")],
+        "default_type": "product",
         "filename_placeholder": "product-vision-2026.md",
         "name_placeholder": "Product Vision 2026",
         "empty_message": "No product documents uploaded yet. Add vision, roadmap, or story documents to inform nightly reviews.",
@@ -85,15 +86,16 @@ for section_key, config in DOC_SECTIONS.items():
     # Create doc
     @router.post(base_url, name=f"create_{section_key.replace('-', '_')}")
     async def create_doc(
-        filename: str = Form(...),
         display_name: str = Form(...),
-        content: str = Form(...),
         doc_type: str = Form(config["default_type"]),
+        file: UploadFile = File(...),
         session: AsyncSession = Depends(get_session),
         _base_url=base_url,
     ):
+        file_bytes = await file.read()
+        content = extract_text(file.filename, file_bytes)
         data = ProductDocCreate(
-            filename=filename,
+            filename=file.filename,
             display_name=display_name,
             content=content,
             doc_type=doc_type,
@@ -128,9 +130,14 @@ for section_key, config in DOC_SECTIONS.items():
         display_name: str = Form(...),
         content: str = Form(...),
         doc_type: str = Form(config["default_type"]),
+        file: UploadFile | None = File(None),
         session: AsyncSession = Depends(get_session),
         _base_url=base_url,
     ):
+        # If a new file was uploaded, extract text from it
+        if file and file.filename:
+            file_bytes = await file.read()
+            content = extract_text(file.filename, file_bytes)
         data = ProductDocUpdate(display_name=display_name, content=content, doc_type=doc_type)
         await doc_service.update_doc(session, doc_id, data)
         return RedirectResponse(_base_url, status_code=303)

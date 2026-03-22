@@ -79,8 +79,8 @@ If there are no concerns, return an empty flags array. Do not invent problems.\
 
 
 def _build_product_context(docs: list[ProductDoc]) -> str:
-    priority = {"vision": 0, "roadmap": 1, "story": 2, "general": 3, "compliance": 4, "technical": 5}
-    sorted_docs = sorted(docs, key=lambda d: priority.get(d.doc_type, 99))
+    priority = {"product": 0, "compliance": 1, "technical": 2}
+    sorted_docs = sorted(docs, key=lambda d: (priority.get(d.doc_type, 99), d.created_at))
 
     parts: list[str] = []
     total_chars = 0

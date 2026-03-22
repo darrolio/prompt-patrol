@@ -9,21 +9,20 @@
 
 <div class="card">
     <div class="card-body">
-        <form method="post" action="{{ base_url }}/{{ doc.id }}/edit">
+        <form method="post" action="{{ base_url }}/{{ doc.id }}/edit" enctype="multipart/form-data">
             <div class="form-group">
                 <label>Display Name</label>
                 <input type="text" name="display_name" value="{{ doc.display_name }}" required>
             </div>
+            <input type="hidden" name="doc_type" value="{{ doc.doc_type }}">
             <div class="form-group">
-                <label>Type</label>
-                <select name="doc_type">
-                    {% for val, label in type_options %}
-                    <option value="{{ val }}" {% if doc.doc_type == val %}selected{% endif %}>{{ label }}</option>
-                    {% endfor %}
-                </select>
+                <label>Replace with new file (optional)</label>
+                <input type="file" name="file" accept=".pdf,.txt,.md,.docx"
+                       style="padding: 6px 0;">
+                <small class="text-muted">Upload a new file to replace the extracted text below. Accepted: .pdf, .txt, .md, .docx</small>
             </div>
             <div class="form-group">
-                <label>Content</label>
+                <label>Extracted Text</label>
                 <textarea name="content" rows="20" required>{{ doc.content }}</textarea>
             </div>
             <button type="submit" class="btn btn-primary">Save Changes</button>

@@ -12,7 +12,7 @@ async def list_docs(
     active_only: bool = False,
     doc_types: list[str] | None = None,
 ) -> list[ProductDoc]:
-    stmt = select(ProductDoc).order_by(ProductDoc.doc_type, ProductDoc.display_name)
+    stmt = select(ProductDoc).order_by(ProductDoc.created_at)
     if active_only:
         stmt = stmt.where(ProductDoc.is_active.is_(True))
     if doc_types:

@@ -55,16 +55,18 @@ async def cmd_import_docs(args):
         print(f"Error: Path '{path}' does not exist.")
         sys.exit(1)
 
+    from prompt_review.services.doc_extractor import extract_text, ACCEPTED_EXTENSIONS
+
     files = [path] if path.is_file() else sorted(path.glob("*"))
-    files = [f for f in files if f.is_file() and f.suffix in (".md", ".txt", ".rst")]
+    files = [f for f in files if f.is_file() and f.suffix.lower() in ACCEPTED_EXTENSIONS]
 
     if not files:
-        print(f"No .md/.txt/.rst files found in '{path}'")
+        print(f"No supported files found in '{path}' (accepted: .pdf, .txt, .md, .docx)")
         sys.exit(1)
 
     async with async_session_factory() as session:
         for f in files:
-            content = f.read_text(encoding="utf-8")
+            content = extract_text(f.name, f.read_bytes())
             data = ProductDocCreate(
                 filename=f.name,
                 display_name=f.stem.replace("-", " ").replace("_", " ").title(),
@@ -110,7 +112,7 @@ def main():
     # import-docs
     imp = sub.add_parser("import-docs", help="Import product documents from filesystem")
     imp.add_argument("path", help="File or directory to import")
-    imp.add_argument("--doc-type", default="general", choices=["vision", "roadmap", "story", "general"])
+    imp.add_argument("--doc-type", default="product", choices=["product", "compliance", "technical"])
 
     # run-review
     rev = sub.add_parser("run-review", help="Manually trigger a review")
