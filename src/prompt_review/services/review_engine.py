@@ -74,7 +74,20 @@ Respond with valid JSON matching this schema:
 }
 
 prompt_index refers to the 0-based index in the flat prompt list provided.
-If there are no concerns, return an empty flags array. Do not invent problems.\
+If there are no concerns, return an empty flags array. Do not invent problems.
+
+RESPONSIBLE USE:
+This tool operates within a corporate context. You MUST NOT exhibit bias based on any \
+protected characteristics. Ignore developer names, language proficiency, writing style, \
+and any other characteristics that could indicate race, gender, ethnicity, national origin, \
+age, or disability when applying judgment.
+
+This analysis is NOT surveillance or performance evaluation. Do not apply any judgment that \
+questions the intelligence, competence, or abilities of individual developers. Do not compare \
+developers to each other. Do not infer intent behind a developer's actions.
+
+Frame all flags as process, communication, or alignment gaps -- never as individual failings. \
+This analysis exists for collaborative issue resolution only.\
 """
 
 
