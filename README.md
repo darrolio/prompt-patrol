@@ -202,10 +202,26 @@ Or click "Run Review Now" on the homepage.
 | Report Detail | `/reports/{YYYY-MM-DD}` | AI summary (grouped by project), flagged prompts with severity badges, stats |
 | Prompt Browser | `/prompts` | Searchable list with HTMX filtering by date, developer, project, ticket, flag status |
 | Product Docs | `/product-docs` | Create, edit, toggle, and delete product documents |
+| Compliance Docs | `/compliance-docs` | Manage policies and procedures for compliance review |
+| Technical Docs | `/technical-docs` | Manage architecture and coding standards for technical review |
+
+## Document Types
+
+Prompt Patrol uses three categories of documents to inform the nightly AI review. Each has its own section in the sidebar.
+
+**Product Docs** (`/product-docs`) -- Define what the team should be building. Upload product vision, roadmap, user stories, and general product documents. The AI reviews prompts for alignment with these documents.
+
+**Compliance Docs** (`/compliance-docs`) -- Define policies and procedures the team must follow. The AI flags prompts that suggest work which may violate data handling policies, security procedures, or regulatory requirements.
+
+**Technical Docs** (`/technical-docs`) -- Define how the system should be built. Upload architecture decisions, coding standards, and infrastructure patterns. The AI flags prompts that deviate from documented technical standards.
+
+All three doc types support the same CRUD operations: create, edit, toggle active/inactive, and delete. Only active documents are included in the nightly review.
 
 ## Flag Types
 
-The nightly review flags prompts that indicate product-direction concerns:
+The nightly review flags prompts across three dimensions: product, compliance, and technical.
+
+**Product flags:**
 
 | Flag | Description |
 |---|---|
@@ -214,9 +230,25 @@ The nightly review flags prompts that indicate product-direction concerns:
 | `INSUFFICIENT_CONTEXT` | Prompt too vague for the AI to produce correct code |
 | `BACKTRACKING` | Undoing or reversing earlier work (unclear requirements signal) |
 
+**Compliance flags:**
+
+| Flag | Description |
+|---|---|
+| `COMPLIANCE` | Prompt suggests work that may violate policies or procedures (data handling, security policy, regulatory) |
+
+**Technical flags:**
+
+| Flag | Description |
+|---|---|
+| `ARCHITECTURAL` | Deviates from documented system architecture (wrong patterns, service boundaries) |
+| `SECURITY` | Potential security concern (auth bypass, injection risk, secrets handling) |
+| `PERFORMANCE` | Likely performance issue (N+1 queries, missing indexes, blocking calls) |
+| `DEPENDENCY` | Using unauthorized or inappropriate libraries or frameworks |
+| `CONVENTION` | Deviates from documented coding standards or conventions |
+
 Each flag has a severity level: **info** (minor observation), **warning** (discuss at standup), or **critical** (immediate PM attention).
 
-The review engine is deliberately judicious -- it does not flag routine debugging, refactoring, test-writing, or exploratory work.
+The review engine is deliberately judicious -- it does not flag routine debugging, refactoring, test-writing, or exploratory work. Compliance and technical flags are only raised when relevant documents have been uploaded.
 
 ## Register a Save
 
