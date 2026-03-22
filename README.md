@@ -15,7 +15,9 @@ Developer Machine                     Server
 |   +-- Hook ------+----------------->|    /api/v1/prompts  [ingestion]  |
 |   (python script)|                  |    /                [reports]    |
 +------------------+                  |    /prompts         [browser]   |
-                                      |    /product-docs    [docs mgmt] |
+                                      |    /product-docs    [product]   |
+                                      |    /compliance-docs [compliance]|
+                                      |    /technical-docs  [technical] |
                                       +----------+-------------------------+
                                                  |
                                       +----------v----------+
@@ -82,6 +84,7 @@ Copy the hook script:
 ```bash
 mkdir -p ~/.prompt-review
 cp hook/prompt_review_hook.py ~/.prompt-review/
+cp hook/pii_masker.py ~/.prompt-review/
 ```
 
 Set environment variables (add to `~/.bashrc`, `~/.zshrc`, or similar):
@@ -104,6 +107,7 @@ Copy the hook script:
 ```powershell
 mkdir "$env:USERPROFILE\.prompt-review" -Force
 copy hook\prompt_review_hook.py "$env:USERPROFILE\.prompt-review\"
+copy hook\pii_masker.py "$env:USERPROFILE\.prompt-review\"
 ```
 
 Set environment variables permanently (PowerShell as your user):
@@ -171,6 +175,8 @@ Claude Code picks up hook changes automatically -- no need to restart your sessi
 
 The hook **always exits 0** -- it never blocks developer workflow. Errors are logged to `~/.prompt-review/hook.log` (on Windows: `%USERPROFILE%\.prompt-review\hook.log`).
 
+> **PII Protection:** The hook masks SSNs, credit card numbers, emails, phone numbers, API keys, and other sensitive data *before* sending prompts to the server. The server applies the same masking as a safety net before storing to the database.
+
 ### 4. Upload Documents
 
 Upload documents that inform the nightly AI review. There are three categories:
@@ -220,7 +226,7 @@ Prompt Patrol uses three categories of documents to inform the nightly AI review
 
 **Technical Docs** (`/technical-docs`) -- Define how the system should be built. Upload architecture decisions, coding standards, and infrastructure patterns. The AI flags prompts that deviate from documented technical standards.
 
-All three doc types support the same CRUD operations: create, edit, toggle active/inactive, and delete. Only active documents are included in the nightly review.
+Upload documents via the web UI (browse for a file) or CLI. Accepted formats: **.pdf, .txt, .md, .docx**. Text is extracted and stored in the database; the original file is not kept on the server. All three doc types support edit, toggle active/inactive, and delete. Only active documents are included in the nightly review.
 
 ## Flag Types
 
@@ -315,9 +321,11 @@ prompt-review/
 │   ├── env.py
 │   └── versions/
 │       ├── 001_initial_schema.py
-│       └── 002_add_prompt_saves.py
+│       ├── 002_add_prompt_saves.py
+│       └── 003_simplify_doc_types.py
 ├── hook/                       # Client-side hook for dev machines
 │   ├── prompt_review_hook.py
+│   ├── pii_masker.py           # PII masking (copied to dev machines)
 │   └── install.sh
 ├── src/prompt_review/
 │   ├── main.py                 # App entry point, scheduler
@@ -331,7 +339,9 @@ prompt-review/
 │   ├── services/               # Business logic
 │   │   ├── ingestion.py        # Prompt storage + auth
 │   │   ├── review_engine.py    # Nightly LLM review
-│   │   └── product_docs.py     # Document CRUD
+│   │   ├── product_docs.py     # Document CRUD
+│   │   ├── pii_masker.py       # PII/secret redaction
+│   │   └── doc_extractor.py    # Text extraction (PDF, DOCX, TXT, MD)
 │   ├── templates/              # Jinja2 templates
 │   └── static/                 # CSS + HTMX
 ├── tests/
@@ -363,3 +373,4 @@ uvicorn prompt_review.main:app --reload
 - **APScheduler** -- in-process cron scheduler
 - **Jinja2** + **HTMX** -- server-rendered UI with dynamic filtering
 - **PostgreSQL 16** -- data storage
+- **PyPDF2** + **python-docx** -- document text extraction
