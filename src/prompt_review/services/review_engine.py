@@ -33,7 +33,7 @@ prefixed with "Project: " (e.g. "## Project: MyApp"), then summarize what was wo
 - Flag specific prompts that show genuine concerns across product, compliance, and technical dimensions.
 
 Flag types -- Product:
-- CONFUSION: Developer going in circles, contradicting earlier prompts in the same session.
+- CONFUSION: Session shows repeated rework, contradicting earlier prompts in the same session.
 - MISALIGNMENT: Work direction contradicts product vision, roadmap, or active stories.
 - INSUFFICIENT_CONTEXT: Prompt is too vague for the AI to produce correct, product-aligned code.
 - BACKTRACKING: Undoing or reversing earlier work, signaling unclear requirements.
@@ -43,7 +43,7 @@ Flag types -- Compliance:
 (e.g. data handling violations, security policy deviations, regulatory risks).
 
 Flag types -- Technical:
-- ARCHITECTURAL: Work deviates from documented system architecture (wrong patterns, service boundaries).
+- ARCHITECTURAL: Work deviates from documented system architecture (undocumented patterns, service boundaries).
 - SECURITY: Potential security concern (auth bypass, injection risk, secrets handling).
 - PERFORMANCE: Likely performance issue (N+1 queries, missing indexes, blocking calls in async code).
 - DEPENDENCY: Using unauthorized or inappropriate libraries or frameworks.

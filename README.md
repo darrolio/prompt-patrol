@@ -1,6 +1,6 @@
 # Prompt Patrol
 
-Engineers prompt AI coding assistants daily, but nobody reviews whether those prompts align with product vision, stories, or roadmap. Code review catches output problems; **Prompt Patrol catches input problems**.
+Engineers prompt AI coding assistants daily, but nobody reviews whether those prompts align with product vision, stories, or roadmap. Code review helps with output quality; **Prompt Patrol helps the team stay aligned on inputs**.
 
 Prompt Patrol collects prompts from AI coding assistants (starting with Claude Code), stores them centrally, and runs a nightly LLM review that flags concerns and summarizes the day's work.
 
@@ -236,7 +236,7 @@ The nightly review flags prompts across three dimensions: product, compliance, a
 
 | Flag | Description |
 |---|---|
-| `CONFUSION` | Developer going in circles or contradicting earlier prompts |
+| `CONFUSION` | Session shows repeated rework or contradicting earlier prompts |
 | `MISALIGNMENT` | Work direction contradicts product vision, roadmap, or stories |
 | `INSUFFICIENT_CONTEXT` | Prompt too vague for the AI to produce correct code |
 | `BACKTRACKING` | Undoing or reversing earlier work (unclear requirements signal) |
@@ -251,7 +251,7 @@ The nightly review flags prompts across three dimensions: product, compliance, a
 
 | Flag | Description |
 |---|---|
-| `ARCHITECTURAL` | Deviates from documented system architecture (wrong patterns, service boundaries) |
+| `ARCHITECTURAL` | Deviates from documented system architecture (undocumented patterns, service boundaries) |
 | `SECURITY` | Potential security concern (auth bypass, injection risk, secrets handling) |
 | `PERFORMANCE` | Likely performance issue (N+1 queries, missing indexes, blocking calls) |
 | `DEPENDENCY` | Using unauthorized or inappropriate libraries or frameworks |
@@ -263,14 +263,14 @@ The review engine is deliberately judicious -- it does not flag routine debuggin
 
 ## Register a Save
 
-When a PM reviews prompts and discovers one that helped the team catch a problem early (misalignment, confusion, wasted effort), they can **register a save** on that prompt. This creates a record that proves the system's value over time.
+When a PM reviews prompts and discovers one that helped the team spot a misalignment early (direction drift, unclear requirements, wasted effort), they can **register a save** on that prompt. This creates a record that proves the system's value over time.
 
 **How to register a save:**
 
 1. Open the **Prompt Browser** (`/prompts`)
 2. Click on any prompt row to expand it
 3. Click the 🛟 **Register a Save** toggle
-4. Describe how reviewing this prompt helped the team (e.g. "Caught developer building feature X which was cut from the roadmap last week -- saved ~2 days of wasted effort")
+4. Describe how reviewing this prompt helped the team (e.g. "Spotted a prompt heading toward feature X, which was cut from the roadmap last week -- saved ~2 days of misdirected effort")
 5. Click **Submit Save**
 
 Once saved, the life preserver icon appears on the prompt row. Save counts are displayed on the Daily Reports list and Report Detail pages. To edit a save, click the pencil icon next to it.
